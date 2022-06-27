@@ -25,11 +25,13 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Story>>> GetStories()
         {
-          if (_context.Stories == null)
-          {
-              return NotFound();
-          }
-            return await _context.Stories.ToListAsync();
+
+         
+              if (_context.Stories == null)
+              {
+                  return NotFound();
+              }
+               return await _context.Stories.ToListAsync();
         }
 
         // GET: api/Stories/5
