@@ -25,23 +25,21 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Story>>> GetStories()
         {
-
-         
-              if (_context.Stories == null)
-              {
-                  return NotFound();
-              }
-               return await _context.Stories.ToListAsync();
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
+            return await _context.Stories.ToListAsync();
         }
 
         // GET: api/Stories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Story>> GetStory(int id)
         {
-          if (_context.Stories == null)
-          {
-              return NotFound();
-          }
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
             var story = await _context.Stories.FindAsync(id);
 
             if (story == null)
@@ -50,6 +48,31 @@ namespace WebAPI.Controllers
             }
 
             return story;
+        }
+
+        // GET: api/getStoriesByStatus/true
+        [HttpGet("getStoriesByStatus/{isApproved}")]
+        public async Task<IActionResult> GetStoriesByStatus(bool isApproved)
+        {
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
+            var strs = await _context.Stories.Where(x => x.IsApproved == isApproved).ToListAsync();
+            return Ok(strs);
+        }
+
+        // GET: api/getStoriesByUserId/5
+        [HttpGet("getStoriesByUserId/{id}")]
+        public async Task<IActionResult> GetStoriesByUserId(string id)
+        {
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
+
+            var strs = await _context.Stories.Where(x => x.Id == id).ToListAsync();
+            return Ok(strs);
         }
 
         // PUT: api/Stories/5
@@ -83,19 +106,69 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
+        // PUT: api/approveStory/5
+       
+        [HttpPut("approveStory/{id}")]
+        public async Task<IActionResult> ApproveStory(int id, Story story)
+        {
+            try
+            {
+                if (_context.Stories == null)
+                {
+                    return NotFound();
+                }
+                var str = await _context.Stories.Where(x => x.SSId == id)
+                                                .AsNoTracking()
+                                                .FirstOrDefaultAsync();
+                if (str != null)
+                {
+                    str.IsApproved = true;
+                    _context.Stories.Update(str);
+                    await _context.SaveChangesAsync();
+                    return NoContent();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception E)
+            {
+                //E
+                var msg = (E.InnerException != null) ? (E.InnerException.Message) : (E.Message);
+                return StatusCode(500, "Admin is working on it! " + msg);
+            }
+        }
+
         // POST: api/Stories
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Story>> PostStory(Story story)
         {
-          if (_context.Stories == null)
-          {
-              return Problem("Entity set 'SSDbContext.Stories'  is null.");
-          }
-            _context.Stories.Add(story);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetStory", new { id = story.SSId }, story);
+            try
+            {
+                if (_context.Stories == null)
+                {
+                    return Problem("Entity set 'SSDbContext.Stories'  is null.");
+                }
+                if (ModelState.IsValid)
+                {
+                   // story.Id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+                    story.CreatedOn = DateTime.Now;
+                    story.IsApproved = false;
+                    _context.Stories.Add(story);
+                    await _context.SaveChangesAsync();
+                    return CreatedAtAction("GetStory", new { id = story.SSId }, story);
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception E)
+            {
+                var msg = (E.InnerException != null) ? (E.InnerException.Message) : (E.Message);
+                return StatusCode(500, "Admin is working on it! " + msg);
+            }
         }
 
         // DELETE: api/Stories/5
