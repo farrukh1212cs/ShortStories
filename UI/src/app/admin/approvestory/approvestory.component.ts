@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Story } from '../../models/story';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-approvestory',
@@ -7,9 +9,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ApprovestoryComponent implements OnInit {
 
-  constructor() { }
+  stories: Story[] = [];
+  search: string = "";
+  p: number = 1;
+
+  getStoriesByStatus(isApproved: boolean) {
+    return this.api.getStoriesByStatus(isApproved).subscribe(res => {
+      this.stories = res;
+    });
+  }
+
+  constructor(private api: ApiService) { }
 
   ngOnInit(): void {
+    this.getStoriesByStatus(false);
+  }
+
+  approveStory(story: Story) {
+    if (confirm("Are you sure to approve?")) {
+      this.api.approveStory(story).subscribe(res => {
+        alert("Story approved Successfully");
+        this.getStoriesByStatus(false);
+      });
+    }
   }
 
 }
