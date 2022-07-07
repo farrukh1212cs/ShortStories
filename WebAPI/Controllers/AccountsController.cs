@@ -59,5 +59,39 @@ namespace WebAPI.Controllers
             }
         }
 
+
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                  
+                    var signInResult = await signInManager.PasswordSignInAsync(model.UserName, model.Password, false,false);
+
+                    if (signInResult.Succeeded)
+                    {
+
+                        var user = await userManager.FindByNameAsync(model.UserName);
+                        var roles = await userManager.GetRolesAsync(user);
+
+                        return Ok(new {id = user.Id,userName = user.UserName,role = roles[0]});
+                        
+                    }
+                    else
+                    {
+                        return BadRequest("Invalid UserName Or Password");
+                    }
+                }
+                return BadRequest(ModelState);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error! Please Contact Admin!");
+            }
+        }
+
     }
 }

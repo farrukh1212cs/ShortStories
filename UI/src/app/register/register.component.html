@@ -17,8 +17,8 @@
             <div class="form-group">
               <input type="email" [ngClass]="(urf['email'].touched && urf['email'].invalid)?'form-control is-invalid':((urf['email'].touched && urf['email'].valid)?'form-control is-valid':'form-control')" formControlName="email" placeholder="user email" />
               <div *ngIf="urf['email'].touched && urf['email'].invalid" class="invalid-feedback">
-                <!--<div *ngIf="urf['email'].errors['required']">Required</div>
-                <div *ngIf="urf['email'].errors['email']">Invalid</div>-->
+                <div *ngIf="urf['email'].errors['required']">Required</div>
+                <div *ngIf="urf['email'].errors['email']">Invalid</div>
                 Email is required or invalid
               </div>
             </div>
