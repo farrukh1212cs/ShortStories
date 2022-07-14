@@ -18,19 +18,19 @@ export class ApiService {
   }
 
   postStory(story: Story) {
-    return this.api.post<Story>(this.baseUrl + "/stories", story);
+    return this.api.post<Story>(this.baseUrl + "/stories", story, { withCredentials: true });
   }
 
   getStoriesByStatus(isApproved: boolean) {
-    return this.api.get<Story[]>(this.baseUrl + "/stories/getStoriesByStatus/" + isApproved);
+    return this.api.get<Story[]>(this.baseUrl + "/stories/getStoriesByStatus/" + isApproved, { withCredentials: true });
   }
 
   approveStory(story: Story) {
-    return this.api.put<Story>(this.baseUrl + "/stories/approveStory/" + story.ssId, story);
+    return this.api.put<Story>(this.baseUrl + "/stories/approveStory/" + story.ssId, story, { withCredentials: true });
   }
 
   getStoriesByUserId(id: string) {
-    return this.api.get<Story[]>(this.baseUrl + "/stories/getStoriesByUserId/" + id);
+    return this.api.get<Story[]>(this.baseUrl + "/stories/getStoriesByUserId/" + id, { withCredentials: true } );
   }
 
   

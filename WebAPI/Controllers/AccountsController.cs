@@ -93,5 +93,12 @@ namespace WebAPI.Controllers
             }
         }
 
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogOut()
+        {
+            await signInManager.SignOutAsync();
+            return NoContent();
+        }
     }
 }
