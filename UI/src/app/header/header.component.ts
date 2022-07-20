@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { LocalStorageService } from 'angular-web-storage';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -11,6 +12,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(private authService: AuthService,
     private router: Router,
+    public localStorage: LocalStorageService
 ) { }
 
   ngOnInit(): void {
@@ -22,7 +24,7 @@ export class HeaderComponent implements OnInit {
       },
       err => { },
       () => {
-        
+        this.localStorage.remove('Obj');
         this.router.navigate(['./login']);
       }
     );

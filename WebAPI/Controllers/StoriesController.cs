@@ -110,6 +110,7 @@ namespace WebAPI.Controllers
 
         // PUT: api/approveStory/5
        
+        [Authorize(Roles ="Admin")]
         [HttpPut("approveStory/{id}")]
         public async Task<IActionResult> ApproveStory(int id, Story story)
         {

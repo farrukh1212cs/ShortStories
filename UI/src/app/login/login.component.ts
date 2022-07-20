@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { LocalStorageService } from 'angular-web-storage';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class LoginComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-/*   private localStorage: LocalStorageService,*/  ) { }
+   private localStorage: LocalStorageService ) { }
 
   ngOnInit() {
     this.userLoginForm = this.fb.group({
@@ -29,7 +30,7 @@ export class LoginComponent implements OnInit {
   login() {
     this.authService.login(this.userLoginForm.value).subscribe(
       res => {
-        /*   this.localStorage.set("Obj", res);*/
+           this.localStorage.set("Obj", res);
 
         console.log(res);
       },
