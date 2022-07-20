@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WebAPI.ViewModels;
 
 namespace WebAPI.Controllers
@@ -15,12 +19,13 @@ namespace WebAPI.Controllers
     {
         UserManager<SSUser> userManager;
         SignInManager<SSUser> signInManager;
+        IConfiguration configuration;
 
-
-        public AccountsController(SignInManager<SSUser> _signInManager, UserManager<SSUser> _userManager)
+        public AccountsController(IConfiguration _configuration, SignInManager<SSUser> _signInManager, UserManager<SSUser> _userManager)
         {
             signInManager = _signInManager;
             userManager = _userManager;
+            configuration = _configuration;
         }
 
         [HttpPost("register")]
@@ -59,8 +64,6 @@ namespace WebAPI.Controllers
             }
         }
 
-
-
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -68,17 +71,35 @@ namespace WebAPI.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                  
-                    var signInResult = await signInManager.PasswordSignInAsync(model.UserName, model.Password, false,false);
+                    var user = await userManager.FindByNameAsync(model.UserName);
+                    var signInResult = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
                     if (signInResult.Succeeded)
                     {
-
-                        var user = await userManager.FindByNameAsync(model.UserName);
                         var roles = await userManager.GetRolesAsync(user);
 
-                        return Ok(new {id = user.Id,userName = user.UserName,role = roles[0]});
-                        
+                        //Step - 1 Creating Claims
+                        IdentityOptions identityOptions = new IdentityOptions();
+                        var claims = new Claim[]
+                        {
+                        new Claim(identityOptions.ClaimsIdentity.UserIdClaimType,user.Id),
+                        new Claim(identityOptions.ClaimsIdentity.UserNameClaimType,user.UserName),
+                        new Claim(identityOptions.ClaimsIdentity.RoleClaimType, roles[0])
+                        };
+
+                        //Step - 2: Create signingKey from Secretkey
+                        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("SS:JWTKey").Value));
+
+                        //Step -3: Create signingCredentials from signingKey with HMAC algorithm
+                        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+
+                        //Step - 4: Create JWT with signingCredentials, IdentityClaims & expire duration.
+                        var jwt = new JwtSecurityToken(signingCredentials: signingCredentials,
+                                                        expires: DateTime.Now.AddMinutes(30), claims: claims);
+
+                        //Step - 5: Finally write the token as response with OK().
+                        return Ok(new { tokenJwt = new JwtSecurityTokenHandler().WriteToken(jwt), id = user.Id, userName = user.UserName, role = roles[0] });
+
                     }
                     else
                     {
@@ -92,6 +113,38 @@ namespace WebAPI.Controllers
                 return StatusCode(500, "Internal Server Error! Please Contact Admin!");
             }
         }
+
+        //[HttpPost("login")]
+        //public async Task<IActionResult> Login(LoginViewModel model)
+        //{
+        //    try
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+
+        //            var signInResult = await signInManager.PasswordSignInAsync(model.UserName, model.Password, false,false);
+
+        //            if (signInResult.Succeeded)
+        //            {
+
+        //                var user = await userManager.FindByNameAsync(model.UserName);
+        //                var roles = await userManager.GetRolesAsync(user);
+
+        //                return Ok(new {id = user.Id,userName = user.UserName,role = roles[0]});
+
+        //            }
+        //            else
+        //            {
+        //                return BadRequest("Invalid UserName Or Password");
+        //            }
+        //        }
+        //        return BadRequest(ModelState);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500, "Internal Server Error! Please Contact Admin!");
+        //    }
+        //}
 
 
         [HttpPost("logout")]

@@ -19,6 +19,7 @@ import { ErrorComponent } from './error/error.component';
 import { ReadstoriesComponent } from './user/readstories/readstories.component';
 import { PoststoryComponent } from './user/poststory/poststory.component';
 import { ApprovestoryComponent } from './admin/approvestory/approvestory.component';
+import { AccessdeniedComponent } from './accessdenied/accessdenied.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { ApprovestoryComponent } from './admin/approvestory/approvestory.compone
     ErrorComponent,
     ReadstoriesComponent,
     PoststoryComponent,
-    ApprovestoryComponent
+    ApprovestoryComponent,
+    AccessdeniedComponent
   ],
   imports: [
     BrowserModule,

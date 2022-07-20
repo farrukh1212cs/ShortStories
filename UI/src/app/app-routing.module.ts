@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AccessdeniedComponent } from './accessdenied/accessdenied.component';
 import { ApprovestoryComponent } from './admin/approvestory/approvestory.component';
 import { ErrorComponent } from './error/error.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { AuthGuradService } from './services/auth-gurad.service';
 import { PoststoryComponent } from './user/poststory/poststory.component';
 import { ReadstoriesComponent } from './user/readstories/readstories.component';
 
@@ -15,15 +17,19 @@ const routes: Routes = [
   },
   {
     path: 'readstories',
-    component: ReadstoriesComponent
+    component: ReadstoriesComponent,
+    canActivate : [AuthGuradService]
   },
   {
     path: 'poststory',
-    component: PoststoryComponent
+    component: PoststoryComponent,
+    canActivate: [AuthGuradService]
   },
   {
     path: 'approvestory',
-    component: ApprovestoryComponent
+    component: ApprovestoryComponent,
+    canActivate: [AuthGuradService],
+    data: {hasRole : 'Admin'}
   },
   {
     path: 'register',
@@ -33,6 +39,7 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent
   },
+  { path: 'accessdenied', component: AccessdeniedComponent },
   {
     path: '',
     redirectTo: '/home', pathMatch: 'full'
