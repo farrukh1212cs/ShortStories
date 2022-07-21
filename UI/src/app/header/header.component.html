@@ -11,13 +11,17 @@
           <a class="nav-link" routerLink="home" routerLinkActive="active">Home </a>
         </li>
         <li class="nav-item">
-          <a *ngIf="this.localStorage.get('Obj')"  class="nav-link" routerLink="poststory" routerLinkActive="active">Post Story</a>
+          <a *ngIf="this.localStorage.get('Obj')  && this.localStorage.get('Obj').role=='Admin'" class="nav-link" routerLink="category" routerLinkActive="active">Create Category</a>
         </li>
         <li class="nav-item">
-          <a *ngIf="this.localStorage.get('Obj')  && this.localStorage.get('Obj').role=='Admin'"  class="nav-link" routerLink="approvestory" routerLinkActive="active">Approve Story</a>
+          <a *ngIf="this.localStorage.get('Obj')" class="nav-link" routerLink="poststory" routerLinkActive="active">Post Story</a>
         </li>
         <li class="nav-item">
-          <a  *ngIf="this.localStorage.get('Obj')"  class="nav-link" routerLink="readstories" routerLinkActive="active">Read Stories</a>
+          <a *ngIf="this.localStorage.get('Obj')  && this.localStorage.get('Obj').role=='Admin'" class="nav-link" routerLink="approvestory" routerLinkActive="active">Approve Story</a>
+        </li>
+
+        <li class="nav-item">
+          <a *ngIf="this.localStorage.get('Obj')" class="nav-link" routerLink="readstories" routerLinkActive="active">Read Stories</a>
         </li>
       </ul>
       <ul class="navbar-nav">

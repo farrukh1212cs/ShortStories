@@ -12,5 +12,6 @@ namespace DAL
             optionsBuilder.UseSqlServer(@"Server=.;Database=SSDb_8;Trusted_Connection=True;");
         }
         public DbSet<Story>? Stories { get; set; }
+        public DbSet<Category>? Categories { get; set; }
     }
 }

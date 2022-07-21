@@ -20,6 +20,7 @@ import { ReadstoriesComponent } from './user/readstories/readstories.component';
 import { PoststoryComponent } from './user/poststory/poststory.component';
 import { ApprovestoryComponent } from './admin/approvestory/approvestory.component';
 import { AccessdeniedComponent } from './accessdenied/accessdenied.component';
+import { CategoryComponent } from './admin/category/category.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { AccessdeniedComponent } from './accessdenied/accessdenied.component';
     ReadstoriesComponent,
     PoststoryComponent,
     ApprovestoryComponent,
-    AccessdeniedComponent
+    AccessdeniedComponent,
+    CategoryComponent
   ],
   imports: [
     BrowserModule,

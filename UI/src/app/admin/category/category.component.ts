@@ -1,49 +1,40 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LocalStorageService } from 'angular-web-storage';
-import { Category } from '../../models/category';
 import { ApiService } from '../../services/api.service';
 
 @Component({
-  selector: 'app-poststory',
-  templateUrl: './poststory.component.html',
+  selector: 'app-category',
+  templateUrl: './category.component.html',
   styleUrls: []
 })
-export class PoststoryComponent implements OnInit {
+export class CategoryComponent implements OnInit {
 
-  postStoryForm!: FormGroup;
+  postCategoryForm!: FormGroup;
 
   public serverErrors: string[] = [];
   public showSuccessMsg = false;
   public showFailureMsg = false;
   public successMsg: string = "";
-  categories: Category[] = [];
-
   constructor(private fb: FormBuilder,
-    private api: ApiService,
-    private localStorage: LocalStorageService) { }
+    private api: ApiService,) { }
 
   ngOnInit(): void {
-    this.getCategories();
-    this.postStoryForm = this.fb.group({
-      ssTitle: ["", Validators.required],
-      ssDescription: ["", Validators.required],
-      cattegoryId:["",Validators.required]
+
+
+    this.postCategoryForm = this.fb.group({
+      Name: ["", Validators.required],
+      Description: ["", Validators.required]
     });
   }
 
-  getCategories() {
-    return this.api.getCategories().subscribe(res => {
-      this.categories = res;
-    });
-  }
 
   get ssForm() {
-      return this.postStoryForm.controls;
+    return this.postCategoryForm.controls;
   }
-  postStory() {
-    console.log(this.postStoryForm.value);
-    this.api.postStory(this.postStoryForm.value).subscribe(
+
+  postCategory() {
+    console.log(this.postCategoryForm.value);
+    this.api.postCategory(this.postCategoryForm.value).subscribe(
       res => {
       },
       err => {
@@ -68,8 +59,8 @@ export class PoststoryComponent implements OnInit {
         this.showSuccessMsg = false;
       },
       () => {
-        this.postStoryForm.reset();
-        this.successMsg = "Story Posted Successfully!";
+        this.postCategoryForm.reset();
+        this.successMsg = "Category Posted Successfully!";
         this.showFailureMsg = false;
         this.showSuccessMsg = true;
         setTimeout(() => {

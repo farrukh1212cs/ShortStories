@@ -1,3 +1,4 @@
+import { Category } from "./category";
 import { Ssuser } from "./ssuser";
 
 export interface Story {
@@ -11,4 +12,5 @@ export interface Story {
   id?: string;
   categoryId?: string;
   ssUser?: Ssuser;
+  category: Category;
 }

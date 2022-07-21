@@ -25,6 +25,12 @@
           Story description is required.
         </div>
       </div>
+      <div class="form-group">
+        <select class="form-select" formControlName="categoryId">
+          <option *ngFor="let c of categories" value="{{c.categoryId}}">{{c.name}}</option>
+        </select>
+
+      </div>
 
 
       <button class="btn btn-primary btn-lg" [disabled]="postStoryForm.invalid" type="submit">Post The Story</button>
