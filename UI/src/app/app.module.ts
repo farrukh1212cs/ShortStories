@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { Ng2SearchPipeModule } from "ng2-search-filter";
@@ -21,6 +21,11 @@ import { PoststoryComponent } from './user/poststory/poststory.component';
 import { ApprovestoryComponent } from './admin/approvestory/approvestory.component';
 import { AccessdeniedComponent } from './accessdenied/accessdenied.component';
 import { CategoryComponent } from './admin/category/category.component';
+import { SsinterceptorService } from './services/ssinterceptor.service';
+import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
+import { LoadingBarModule } from '@ngx-loading-bar/core';
+import { LoadingBarRouterModule } from '@ngx-loading-bar/router';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -45,10 +50,14 @@ import { CategoryComponent } from './admin/category/category.component';
     ReactiveFormsModule,
     Ng2SearchPipeModule,
     OrderModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    LoadingBarHttpClientModule,
+    LoadingBarRouterModule,
+    LoadingBarModule,
+    NgChartsModule
 
   ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: SsinterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

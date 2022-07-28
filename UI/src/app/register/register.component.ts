@@ -32,15 +32,22 @@ export class RegisterComponent implements OnInit {
     return this.userRegistrationForm.controls;
   }
 
+  formData = new FormData();
+  upload(e: any) {
+    this.formData.append("PP", e.files.item(0));
+  }
+
+
   register() {
-    console.log(this.urf);
-    /*console.log(this.urf['email'].errors['email']);*/
-    this.authService.register(this.userRegistrationForm.value).subscribe(
+    this.formData.append('myModel', JSON.stringify(this.userRegistrationForm.value));
+
+    this.authService.register(this.formData).subscribe(
       res => {
 
       },
       err => {
-        console.log(err);
+        this.formData.delete("PP");
+        this.formData.delete("myModel");
       },
       () => {
         alert('User Created Successfully');

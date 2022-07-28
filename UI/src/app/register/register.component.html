@@ -42,7 +42,7 @@
             </div>
             <div class="form-group">
               <label>Upload Your Profile Pic (200x200)px</label>
-              <input type="file" class="form-control-file" name="profilePic">
+              <input type="file" class="form-control-file" (change)="upload($event.target)" name="profilePic">
             </div>
             <button class="btn btn-primary btn-lg" [disabled]="userRegistrationForm.invalid" type="submit">Register</button>
           </div>

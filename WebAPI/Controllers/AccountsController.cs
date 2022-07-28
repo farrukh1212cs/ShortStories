@@ -1,4 +1,5 @@
 ﻿using BOL;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -28,11 +29,12 @@ namespace WebAPI.Controllers
             configuration = _configuration;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        [HttpPost("register"), DisableRequestSizeLimit]
+        public async Task<IActionResult> Register()
         {
             try
             {
+                RegisterViewModel? model = JsonConvert.DeserializeObject<RegisterViewModel>(Request.Form["myModel"].ToString());
                 if (ModelState.IsValid)
                 {
                     var user = new SSUser()
@@ -48,6 +50,17 @@ namespace WebAPI.Controllers
                         var roleResult = await userManager.AddToRoleAsync(user, "User");
                         if (roleResult.Succeeded)
                         {
+                            if (Request.Form.Files.Count > 0)
+                            {
+                                var filePath = Path.GetFullPath("~/ProfilePics/" + user.Id + ".jpeg").Replace("~\\", "");
+
+                                using (var stream = new FileStream(filePath, FileMode.Create))
+                                {
+                                    Request.Form.Files[0].CopyTo(stream);
+                                }
+                            }
+
+
                             return Ok(user);
                         }
                     }
@@ -152,6 +165,28 @@ namespace WebAPI.Controllers
         {
             await signInManager.SignOutAsync();
             return NoContent();
+        }
+
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("getProfilePic")]
+        public IActionResult GetProfilePic()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                string? id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var filePath = Path.GetFullPath("~/ProfilePics/" + id + ".jpeg").Replace("~\\", "");
+                if (!System.IO.File.Exists(filePath))
+                {
+                    filePath = Path.GetFullPath("~/ProfilePics/universal.jpeg").Replace("~\\", "");
+                }
+                var profilePic = System.IO.File.OpenRead(filePath);
+                return File(profilePic, "image/jpeg");
+            }
+            else
+            {
+                return BadRequest("Invalid UserName Or Password");
+            }
         }
     }
 }
