@@ -18,6 +18,8 @@ builder.Services.AddDbContext<SSDbContext>(
     opt=>opt.UseSqlServer(configuration.GetSection("SS:ssConstr").Value)
     );
 
+//builder.Services.AddTransient<IStoryDb,StoryDb>();
+builder.Services.AddTransient<ISSDb,SSDb>();
 builder.Services.AddIdentity<SSUser,IdentityRole>()
                 .AddEntityFrameworkStores<SSDbContext>()
                 .AddDefaultTokenProviders();

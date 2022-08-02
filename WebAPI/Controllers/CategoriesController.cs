@@ -18,31 +18,30 @@ namespace WebAPI.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly SSDbContext _context;
+        ISSDb ssDb;
 
-        public CategoriesController(SSDbContext context)
+        public CategoriesController(ISSDb _ssDb, SSDbContext context)
         {
             _context = context;
+            ssDb = _ssDb;
         }
 
         // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
-          if (_context.Categories == null)
-          {
-              return NotFound();
-          }
-            return await _context.Categories.ToListAsync();
+
+            return await ssDb.categoryDb.GetAll().ToListAsync();
         }
 
         // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
-          if (_context.Categories == null)
-          {
-              return NotFound();
-          }
+            if (_context.Categories == null)
+            {
+                return NotFound();
+            }
             var category = await _context.Categories.FindAsync(id);
 
             if (category == null)
@@ -90,10 +89,10 @@ namespace WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-          if (_context.Categories == null)
-          {
-              return Problem("Entity set 'SSDbContext.Categories'  is null.");
-          }
+            if (_context.Categories == null)
+            {
+                return Problem("Entity set 'SSDbContext.Categories'  is null.");
+            }
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 

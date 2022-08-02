@@ -28,7 +28,7 @@ export class PoststoryComponent implements OnInit {
     this.postStoryForm = this.fb.group({
       ssTitle: ["", Validators.required],
       ssDescription: ["", Validators.required],
-      cattegoryId:["",Validators.required]
+      categoryId:["",Validators.required]
     });
   }
 

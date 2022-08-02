@@ -18,33 +18,26 @@ namespace WebAPI.Controllers
     [ApiController]
     public class StoriesController : ControllerBase
     {
-        private readonly SSDbContext _context;
 
-        public StoriesController(SSDbContext context)
+        ISSDb ssDb;
+
+        public StoriesController(ISSDb _ssDb)
         {
-            _context = context;
+            ssDb = _ssDb;
         }
 
         // GET: api/Stories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Story>>> GetStories()
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-            return await _context.Stories.ToListAsync();
+            return await ssDb.storyDb.GetAll().ToListAsync();
         }
 
         // GET: api/Stories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Story>> GetStory(int id)
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-            var story = await _context.Stories.FindAsync(id);
+            var story = await ssDb.storyDb.GetById(id).FirstOrDefaultAsync();
 
             if (story == null)
             {
@@ -58,11 +51,7 @@ namespace WebAPI.Controllers
         [HttpGet("getStoriesByStatus/{isApproved}")]
         public async Task<IActionResult> GetStoriesByStatus(bool isApproved)
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-            var strs = await _context.Stories.Where(x => x.IsApproved == isApproved).ToListAsync();
+            var strs = await ssDb.storyDb.GetStoriesByStatus(isApproved).ToListAsync();
             return Ok(strs);
         }
 
@@ -70,66 +59,25 @@ namespace WebAPI.Controllers
         [HttpGet("getStoriesByUserId/{id}")]
         public async Task<IActionResult> GetStoriesByUserId(string id)
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-
-            var strs = await _context.Stories.Where(x => x.Id == id).ToListAsync();
+            var strs = await ssDb.storyDb.GetByUserId(id).ToListAsync();
             return Ok(strs);
         }
 
-        // PUT: api/Stories/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutStory(int id, Story story)
-        {
-            if (id != story.SSId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(story).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // PUT: api/approveStory/5
-
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpPut("approveStory/{id}")]
         public async Task<IActionResult> ApproveStory(int id, Story story)
         {
             try
             {
-                if (_context.Stories == null)
-                {
-                    return NotFound();
-                }
-                var str = await _context.Stories.Where(x => x.SSId == id)
+
+                var str = await ssDb.storyDb.GetById(id)
                                                 .AsNoTracking()
                                                 .FirstOrDefaultAsync();
                 if (str != null)
                 {
-                    str.IsApproved = true;
-                    _context.Stories.Update(str);
-                    await _context.SaveChangesAsync();
+                    ssDb.storyDb.Approve(id);
                     return NoContent();
                 }
                 else
@@ -151,17 +99,12 @@ namespace WebAPI.Controllers
         {
             try
             {
-                if (_context.Stories == null)
-                {
-                    return Problem("Entity set 'SSDbContext.Stories'  is null.");
-                }
                 if (ModelState.IsValid)
                 {
                     story.Id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
                     story.CreatedOn = DateTime.Now;
                     story.IsApproved = false;
-                    _context.Stories.Add(story);
-                    await _context.SaveChangesAsync();
+                    ssDb.storyDb.Create(story);
                     return CreatedAtAction("GetStory", new { id = story.SSId }, story);
                 }
                 else
@@ -180,25 +123,17 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStory(int id)
         {
-            if (_context.Stories == null)
+            var result = await ssDb.storyDb.Delete(id);
+            if (result)
+            {
+                return NoContent();
+            }
+            else
             {
                 return NotFound();
             }
-            var story = await _context.Stories.FindAsync(id);
-            if (story == null)
-            {
-                return NotFound();
-            }
-
-            _context.Stories.Remove(story);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool StoryExists(int id)
-        {
-            return (_context.Stories?.Any(e => e.SSId == id)).GetValueOrDefault();
-        }
     }
 }
+
