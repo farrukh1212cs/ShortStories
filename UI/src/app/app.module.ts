@@ -26,6 +26,7 @@ import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
 import { LoadingBarModule } from '@ngx-loading-bar/core';
 import { LoadingBarRouterModule } from '@ngx-loading-bar/router';
 import { NgChartsModule } from 'ng2-charts';
+import { GoogleComponent } from './google/google/google.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { NgChartsModule } from 'ng2-charts';
     PoststoryComponent,
     ApprovestoryComponent,
     AccessdeniedComponent,
-    CategoryComponent
+    CategoryComponent,
+    GoogleComponent
   ],
   imports: [
     BrowserModule,

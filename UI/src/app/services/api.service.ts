@@ -8,7 +8,7 @@ import { Story } from '../models/story';
   providedIn: 'root'
 })
 export class ApiService {
-  baseUrl = "http://localhost:5110/api";
+  baseUrl = "https://localhost:5110/api";
 
   constructor(private api: HttpClient, public localStorage: LocalStorageService) { }
 

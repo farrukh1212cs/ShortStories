@@ -7,7 +7,7 @@ import { Ssuser } from '../models/ssuser';
   providedIn: 'root'
 })
 export class AuthService {
-  baseUrl = "http://localhost:5110/api/accounts";
+  baseUrl = "https://localhost:5110/api/accounts";
   constructor(private api : HttpClient) { }
 
   //register(user: Ssuser) {

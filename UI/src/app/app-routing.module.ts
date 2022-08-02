@@ -4,6 +4,7 @@ import { AccessdeniedComponent } from './accessdenied/accessdenied.component';
 import { ApprovestoryComponent } from './admin/approvestory/approvestory.component';
 import { CategoryComponent } from './admin/category/category.component';
 import { ErrorComponent } from './error/error.component';
+import { GoogleComponent } from './google/google/google.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
@@ -50,7 +51,7 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: '/home', pathMatch: 'full'
-  },
+  }, { path: 'google', component: GoogleComponent },
   {
     path: '**',
     component: ErrorComponent

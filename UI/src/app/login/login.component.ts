@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LocalStorageService } from 'angular-web-storage';
@@ -7,15 +8,19 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: []
+  styles: [
+  ]
 })
 export class LoginComponent implements OnInit {
 
   userLoginForm!: FormGroup;
+
   constructor(private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-   private localStorage: LocalStorageService ) { }
+    private localStorage: LocalStorageService,
+    @Inject(DOCUMENT) private document: Document
+  ) { }
 
   ngOnInit() {
     this.userLoginForm = this.fb.group({
@@ -30,9 +35,7 @@ export class LoginComponent implements OnInit {
   login() {
     this.authService.login(this.userLoginForm.value).subscribe(
       res => {
-           this.localStorage.set("Obj", res);
-
-        console.log(res);
+        this.localStorage.set("Obj", res);
       },
       err => {
         alert("UserName Or Password Is Invalid!");
@@ -45,4 +48,8 @@ export class LoginComponent implements OnInit {
   }
 
 
+  gmailLogin() {
+    //Development
+    this.document.location.href = 'https://localhost:5110/api/Accounts/signInWithGoogle';
+  }
 }
